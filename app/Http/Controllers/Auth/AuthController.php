@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -32,7 +32,7 @@ class AuthController extends Controller
         event(new Registered($user));
 
         return response()->json([
-            'message' => 'A felhasználó sikeresen regisztrálva!',
+            'message' => 'The registration was successfull',
             'user' => $user
         ], 201);
     }
@@ -43,13 +43,14 @@ class AuthController extends Controller
             'password' => ['required']
         ]);
 
+        $user = User::where('email', $request->email)->first();
+
         if(!Auth::attempt($request->only('email', 'password'))){
             return response()->json([
                 'message' => 'Wrong email or password.'
             ], 401);
         }
 
-        $user = Auth::user();
 
         if($user->email_verified_at === null){
             return response()->json([
@@ -57,7 +58,7 @@ class AuthController extends Controller
             ], 403);
         }
 
-        $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken($user->name.'Auth-Token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login succesfull',

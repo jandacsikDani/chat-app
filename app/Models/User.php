@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Friend;
+use Laravel\Pail\File;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -58,5 +60,27 @@ class User extends Authenticatable implements MustVerifyEmail
             $q->where('name', 'LIKE', "%{$search}%")
             ->onWhere('email', 'LIKE', "%{$search}%");
         });
+    }
+
+    public function friends(){
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+        ->wherePivot('status', 'accepted')
+        ->withPivot('status')
+        ->withTimestamps();
+    }
+
+    public function friendRequest(){
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+        ->wherePivot('status', 'pending')
+        ->withPivot('status')
+        ->withTimestamps();
+    }
+
+    public function sentFriendRequests(){
+        return $this->hasMany(Friend::class, 'user_id')->where('status', 'pending');
+    }
+
+    public function receivedFriendRequests(){
+        return $this->hasMany(Friend::class, 'friend_id')->where('status', 'pending');;
     }
 }

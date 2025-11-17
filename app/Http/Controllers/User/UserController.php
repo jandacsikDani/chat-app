@@ -22,7 +22,13 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->paginate(10);
+        if($query->count() === 0){
+            return response()->json([
+                'message' => 'No users found'
+            ],404);
+        }
+        
+        $users = $query->paginate(5);
 
         return response()->json($users);
     }
