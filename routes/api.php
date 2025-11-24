@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\ResendVerificationController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\FriendController;
+use App\Http\Controllers\MessageController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -20,6 +21,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/friends', [FriendController::class, 'listFriends']);
     Route::get('/friends/requests', [FriendController::class, 'friendRequests']);
+
+    Route::post('/message/send/{receiverId}]', [MessageController::class, 'send']);
+    Route::get('/messages/{userId}', [MessageController::class, 'conversation']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
