@@ -49,38 +49,10 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function scopeActive($query){
-        return $query->whereNotNull('email_verified_at');
-    }
-
-    public function scopeSearch($query, $search){
-        if(!$search) return $query;
-
-        return $query->where(function($q) use ($search) {
-            $q->where('name', 'LIKE', "%{$search}%")
-            ->onWhere('email', 'LIKE', "%{$search}%");
-        });
-    }
-
     public function friends(){
         return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
         ->wherePivot('status', 'accepted')
         ->withPivot('status')
         ->withTimestamps();
-    }
-
-    public function friendRequest(){
-        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
-        ->wherePivot('status', 'pending')
-        ->withPivot('status')
-        ->withTimestamps();
-    }
-
-    public function sentFriendRequests(){
-        return $this->hasMany(Friend::class, 'user_id')->where('status', 'pending');
-    }
-
-    public function receivedFriendRequests(){
-        return $this->hasMany(Friend::class, 'friend_id')->where('status', 'pending');;
     }
 }

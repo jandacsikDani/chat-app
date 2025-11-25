@@ -28,8 +28,23 @@ class UserController extends Controller
             ],404);
         }
         
-        $users = $query->paginate(5);
+        $perPage = $request->input('per_page', 5);
+
+        $users = $query->paginate($perPage);
 
         return response()->json($users);
+    }
+
+    public function show(Request $request, $userId){
+        $query = User::query()-> whereNotNull('email_verified_at')->where('id', '!=', $request->user()->id)
+                    ->where('id', $userId);
+
+        if($query->count() === 0){
+            return response()->json([
+                'message' => 'No user found with the specified id'
+            ], 404);
+        }
+
+        return response()->json($query->first());
     }
 }

@@ -22,12 +22,4 @@ class Friend extends Model
     public function friend(){
         return $this->belongsTo(User::class, 'friend_id');
     }
-
-    public function scopePending($query){
-        return $query->where('status', 'pending');
-    }
-
-    public function scopeAccepted($query){
-        return $query->where('status', 'accepted');
-    }
 }
